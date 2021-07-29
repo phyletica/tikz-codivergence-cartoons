@@ -1,0 +1,140 @@
+\documentclass[table,aspectratio=169]{beamer}
+\usepackage{beamerthemesplit}
+\usetheme{boxes}
+\usecolortheme{seahorse}
+\usepackage{ifthen}
+\usepackage{xspace}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{changepage}
+\usepackage[compatibility=false]{caption}
+\captionsetup[figure]{font=scriptsize, labelformat=empty, textformat=simple, justification=centering, skip=2pt}
+
+\usepackage{hyperref}
+\hypersetup{pdfborder={0 0 0}, colorlinks=true, urlcolor=blue, linkcolor=blue, citecolor=blue}
+
+% Setting up tikz
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{trees,calc,backgrounds,arrows,positioning,automata}
+\tikzset{hide on/.code={\only<#1>{\color{white}}}}
+\tikzset{
+    invisible/.style={opacity=0},
+    visible on/.style={alt={#1{}{invisible}}},
+    alt/.code args={<#1>#2#3}{%
+        \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}
+        % \pgfkeysalso doesn't change the path
+    },
+}
+
+
+\setbeamertemplate{blocks}[rounded][shadow=true]
+
+\setbeamercolor{defaultcolor}{bg=structure!30!normal text.bg,fg=black}
+\setbeamercolor{block body}{bg=structure!30!normal text.bg,fg=black}
+\setbeamercolor{block title}{bg=structure!50!normal text.bg,fg=black}
+
+% footnote without a marker
+\newcommand\barefootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+% define formatting for footer
+\newcommand{\myfootline}{%
+    {\it
+    \insertshorttitle
+    \hspace*{\fill} 
+    \insertshortauthor\ -- \insertshortinstitute
+    % \ifx\insertsubtitle\@empty\else, \insertshortsubtitle\fi
+    \hspace*{\fill}
+    \insertframenumber/\inserttotalframenumber}}
+
+% set up footer
+\setbeamertemplate{footline}{%
+    \usebeamerfont{structure}
+    \begin{beamercolorbox}[wd=\paperwidth,ht=2.25ex,dp=1ex]{frametitle}%
+        \Tiny\hspace*{4mm}\myfootline\hspace{4mm}
+    \end{beamercolorbox}}
+
+% remove navigation bar
+\beamertemplatenavigationsymbolsempty
+
+\makeatletter
+    \newenvironment{noheadline}{
+        \setbeamertemplate{headline}[default]
+        \def\beamer@entrycode{\vspace*{-\headheight}}
+    }{}
+\makeatother
+
+% Color palette GreenOrange_6 from https://jiffyclub.github.io/palettable/tableau/
+\definecolor{pgreen}     {RGB}{50,162,81}
+\definecolor{porange}    {RGB}{255,127,15}
+\definecolor{pblue}      {RGB}{60,183,204}
+\definecolor{pyellow}    {RGB}{255,217,74}
+\definecolor{pteal}      {RGB}{57,115,124}
+\definecolor{pauburn}    {RGB}{184,90,13}
+
+%% Dimensions and macros to calc frame content width and height
+\newif\ifsidebartheme
+\sidebarthemetrue
+
+\newlength\frametextheight
+\newlength\headlessframetextheight
+\setlength{\frametextheight}{0.88\textheight}
+\setlength{\headlessframetextheight}{1\textheight}
+
+\newdimen\smarttextheight
+\newdimen\contentheight
+\newdimen\contentwidth
+\newdimen\contentleft
+\newdimen\contentbottom
+\makeatletter
+\newcommand*{\calculatespace}{%
+\contentheight=\paperheight%
+\ifx\beamer@frametitle\@empty%
+    \setbox\@tempboxa=\box\voidb@x%
+  \else%
+    \setbox\@tempboxa=\vbox{%
+      \vbox{}%
+      {\parskip0pt\usebeamertemplate***{frametitle}}%
+    }%
+    \ifsidebartheme%
+      \advance\contentheight by-1em%
+    \fi%
+  \fi%
+\advance\contentheight by-\ht\@tempboxa%
+\advance\contentheight by-\dp\@tempboxa%
+\advance\contentheight by-\beamer@frametopskip%
+\ifbeamer@plainframe%
+\contentbottom=0pt%
+\else%
+\advance\contentheight by-\headheight%
+\advance\contentheight by\headdp%
+\advance\contentheight by-\footheight%
+\advance\contentheight by4pt%
+\contentbottom=\footheight%
+\advance\contentbottom by-4pt%
+\fi%
+\contentwidth=\paperwidth%
+\ifbeamer@plainframe%
+\contentleft=0pt%
+\else%
+\advance\contentwidth by-\beamer@rightsidebar%
+\advance\contentwidth by-\beamer@leftsidebar\relax%
+\contentleft=\beamer@leftsidebar%
+\fi%
+\smarttextheight=\contentheight%
+\advance\smarttextheight by-4mm%
+\ifx\beamer@frametitle\@empty%
+    \advance\smarttextheight by-3mm%
+\fi%
+}
+\makeatother
+
+\newcommand{\smartgraphic}[3][\frametextheight]{%
+\includegraphics#2[width=\linewidth,height=#1,keepaspectratio]{#3}%
+}
